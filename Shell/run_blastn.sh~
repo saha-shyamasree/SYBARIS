@@ -1,0 +1,18 @@
+#!/usr/bin/sh
+
+blast_path=/Volumes/ma-home/SYBARIS/WGS-AF293/Shyama/BLAST+/ncbi-blast-2.2.26+/bin
+cd $blast_path
+
+input_path=/Volumes/ma-home/SYBARIS/WGS-AF293/D0A-unaligned/
+
+for f in $input_path*
+do
+    if [ -d $f ]
+    then
+        echo $f;
+        contig_file_name=`basename $f`
+        echo $contig_file_name;
+        blastn -db /Volumes/ma-home/SYBARIS/WGS-AF293/Shyama/test/AF293_db -query $f/contigs.fa -out /Volumes/ma-home/SYBARIS/WGS-AF293/Shyama/test/xml_output/$contig_file_name.out -outfmt 5
+    fi
+done
+
