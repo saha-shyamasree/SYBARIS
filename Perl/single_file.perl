@@ -6,11 +6,11 @@ my $velvet_path="/nfs/ma/home/shyama/installed_soft/velvet_1.2.06";
 my $path_bowtie2="/nfs/ma/home/shyama/installed_soft/bowtie2-2.0.0-beta6/bowtie2";
 
 my %ref_files=('all'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_Af293_version_s03-m02-r08_chromosomes.fasta",
-                'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_nidulans_FGSC_A4_version_s09-m01-r04_chromosomes.fasta",
-                'C023MABXX_3_8'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_nidulans_FGSC_A4_version_s09-m01-r04_chromosomes.fasta",
-                'D0ACKACXX_1_12'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/N_fischeri_NRRL_181_chromosomes.fasta",
-                'B07BNABXX_1_9'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_A1163_chromosomes.fasta",
-                'C023MABXX_5_2'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_A1163_chromosomes.fasta");
+                'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_nidulans.ASM14920v1.15.dna.toplevel.fa",
+                'C023MABXX_3_8'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_nidulans.ASM14920v1.15.dna.toplevel.fa",
+                'D0ACKACXX_1_12'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Neosartorya_fischeri.CADRE.15.dna.toplevel.fa",
+                'B07BNABXX_1_9'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatusa1163.CADRE.15.dna.toplevel.fa",
+                'C023MABXX_5_2'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatusa1163.CADRE.15.dna.toplevel.fa");
 
 my %index_list=('all'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/AF293/AF293",
                      'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F8226/F8226",
@@ -54,18 +54,20 @@ sub alignment
         $index=$index_list{$base};
     }
     
-    my $command=$path_bowtie2." -x ".$index." -1 ".$base."_1.fastq.gz -2 ".$base."_2.fastq.gz --un un-aligned/".$base.".fastq -S sam/".$base.".sam";
+    my $command=$path_bowtie2." -x ".$index." -1 good/".$base."_1.fastq.gz -2 good/".$base."_2.fastq.gz --un un-aligned/".$base.".fastq -S sam/".$base.".sam";
     print "\nalignment:$command";
     system($command);
     error();
+=prod
     if($base=~m/B07BNABXX_1_9/ || $base=~m/C023MABXX_5_2/)
     {
         $index=$index_list{all};
-        my $command=$path_bowtie2." -x ".$index." -1 ".$base."_1.fastq.gz -2 ".$base."_2.fastq.gz --un un-aligned/".$base."_AF293.fastq -S sam/".$base."_AF293.sam";
+        my $command=$path_bowtie2." -x ".$index." -1 good/".$base."_1.fastq.gz -2 good/".$base."_2.fastq.gz --un un-aligned/".$base."_AF293.fastq -S sam/".$base."_AF293.sam";
         print "\nalignment,1_9/5_2:$command";
         system($command);
         error();
     }
+=cut
 }
 
 sub samToBam
@@ -74,12 +76,14 @@ sub samToBam
     my $com1=$sam_path."\/./samtools view -u -S sam/".$base.".sam -o bamFull/".$base.".bam";
     system($com1);
     error();
+=prod
     if($base=~m/B07BNABXX_1_9/ || $base=~m/C023MABXX_5_2/)
     {
         $com1=$sam_path."\/./samtools view -u -S sam/".$base."_AF293.sam -o bamFull/".$base."_AF293.bam";
         system($com1);
         error();
     }
+=cut
 }
 
 sub samToBam_no_wait
@@ -88,18 +92,18 @@ sub samToBam_no_wait
     my $com1=$sam_path."\/./samtools view -u -S sam/".$base.".sam -o bamFull/".$base.".bam";
     system($com1);
     error();
-    
+=prod
     if($base=~m/B07BNABXX_1_9/ || $base=~m/C023MABXX_5_2/)
     {
         $com1=$sam_path."\/./samtools view -u -S sam/".$base."_AF293.sam -o bamFull/".$base."_AF293.bam";
         system($com1);
         error();
     }
+=cut
 }
 sub separation
 {
     my $base=shift;
-    
     my $command=$sam_path."\/./samtools view -f4 -h bamFull/".$base.".bam > unmapped/".$base.".sam";
     #print "\nSeparation, Unmapped: $command";
     system($command);
@@ -108,6 +112,7 @@ sub separation
     print "\nSeparation,Mapped: $command";
     system($command);
     error();
+=prod
     if($base=~m/B07BNABXX_1_9/ || $base=~m/C023MABXX_5_2/)
     {
         $command=$sam_path."\/./samtools view -f4 -h bamFull/".$base."_AF293.bam > unmapped/".$base."_AF293.sam";
@@ -119,30 +124,32 @@ sub separation
         system($command);
         error();
     }
+=cut
 }
 
 
 sub snpCall
 {
     my $base=shift;
-    
+
     my $refe=$ref_files{all};
     if($ref_files{$base})
     {
         $refe=$ref_files{$base};
     }
+    #print "\n\n";
     print "\n Reference fasta :".$refe;
-    #my $com1=$sam_path."\/./samtools view -u -S mapped/".$base.".sam -o bam/".$base.".bam";#  
-    #system($com1);
-    #error();
-    #my $com2=$sam_path."\/./samtools sort bam/".$base.".bam sorted/".$base;#-w \'done(\"".$base."_bam\")\' 
-    #print "\ncom2: ".$com2;
-    #system($com2);
-    #error();
-    #my $com3=$sam_path."\/./samtools index sorted/".$base.".bam bam/".$base.".index";
-    #system($com3);
-    #print "\ncom3: ".$com3;
-    #error();
+    my $com1=$sam_path."\/./samtools view -u -S mapped/".$base.".sam -o bam/".$base.".bam";#  
+    system($com1);
+    error();
+    my $com2=$sam_path."\/./samtools sort bam/".$base.".bam sorted/".$base;#-w \'done(\"".$base."_bam\")\' 
+    print "\ncom2: ".$com2;
+    system($com2);
+    error();
+    my $com3=$sam_path."\/./samtools index sorted/".$base.".bam bam/".$base.".index";
+    system($com3);
+    print "\ncom3: ".$com3;
+    error();
     my $com4=$sam_path."\/./samtools mpileup -E -ugf ".$refe." sorted/".$base.".bam | ".$sam_path."\/bcftools/./bcftools view -bvcg - > bcf/".$base.".bcf";
     system($com4);
     print "\ncom4: ".$com4;
@@ -152,28 +159,28 @@ sub snpCall
     print "\n Command 5: $com5";
     system($com5);
     error();
-
+=prod
     if($base=~m/B07BNABXX_1_9/ || $base=~m/C023MABXX_5_2/)
     {
         $refe=$ref_files{all};
-        #my $com1="bsub -o /nfs/ma/home/shyama/outputs/SYBARIS/".$base."_bam_convert.txt -w \'done(\"".$base."_AF293_mapped\")\' -J ".$base."_AF293_bam \"".$sam_path."\/./samtools view -u -S mapped/".$base."_AF293.sam -o bam/".$base."_AF293.bam\""; #
-        #system($com1);
-        #error();
-        #my $com2=$sam_path."\/./samtools sort bam/".$base."_AF293.bam sorted/".$base."_AF293";#-w \'done(\"".$base."_AF293_bam\")\' 
-        #system($com2);
-        #error();
-        #my $com3=$sam_path."\/./samtools index sorted/".$base."_AF293.bam bam/".$base."_AF293.index";
-        #system($com3);
-        #error();
+        my $com1=$sam_path."\/./samtools view -u -S mapped/".$base."_AF293.sam -o bam/".$base."_AF293.bam"; #
+        system($com1);
+        error();
+        my $com2=$sam_path."\/./samtools sort bam/".$base."_AF293.bam sorted/".$base."_AF293";#-w \'done(\"".$base."_AF293_bam\")\' 
+        system($com2);
+        error();
+        my $com3=$sam_path."\/./samtools index sorted/".$base."_AF293.bam bam/".$base."_AF293.index";
+        system($com3);
+        error();
         my $com4=$sam_path."\/./samtools mpileup -E -ugf ".$refe." sorted/".$base."_AF293.bam | ".$sam_path."\/bcftools/./bcftools view -bvcg - > bcf/".$base."_AF293.bcf";
         system($com4);
         error();
         #bcftools view .bcf | vcfutils.pl varFilter -D 500 -d 20 | ./filter.pl > .vcf
-        my $com4=$sam_path."\/bcftools/./bcftools view bcf/".$base."_AF293.bcf | ".$sam_path."\/bcftools/vcfutils.pl varFilter -D 500 -d 20 | ".$perl_code_path."./filter.pl > vcf/".$base."_AF293.vcf";
-        system($com4);
+        my $com5=$sam_path."\/bcftools/./bcftools view bcf/".$base."_AF293.bcf | ".$sam_path."\/bcftools/vcfutils.pl varFilter -D 500 -d 20 | ".$perl_code_path."./filter.pl > vcf/".$base."_AF293.vcf";
+        system($com5);
         error();
     }
-
+=cut
 }
 
 sub contigsCreation
@@ -189,6 +196,7 @@ sub contigsCreation
     my $command1=$velvet_path."\/./velvetg contigs/".$base."/ -cov_cutoff auto -exp_cov auto -min_contig_lgth 100";
     system($command1);
     error();
+=prod
     if($base=~m/B07BNABXX_1_9/ || $base=~m/C023MABXX_5_2/)
     {
         if(!(-d "contigs/".$base."_AF293"))
@@ -202,6 +210,7 @@ sub contigsCreation
         system($command1);
         error();
     }
+=cut
 }
 
 sub pipeline
