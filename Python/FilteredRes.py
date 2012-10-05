@@ -4,7 +4,7 @@ import sys
 import re
 
 class FilteredRes:
-    """A class to filter meaningful blast results"""
+    """A class to reprent each blast results"""
     def __init__(self, filename, node, sample,hit_def, indentities, hit_length, alignment_length, good_map, long_map,seqQ,seqP):
         self.filename = filename
         self.sample = sample
