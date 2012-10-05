@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-# something!
-
 #use lib "/Volumes/ma-home/shyama/code/SYBARIS/Perl/";
 use lib "/nfs/ma/home/shyama/code/SYBARIS/Perl/";
 use lib "/nfs/ma/home/shyama/installed_soft/lib64/perl5/";
