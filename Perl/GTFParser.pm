@@ -23,12 +23,13 @@ sub parse
         if($line!~m/^\#/)
         {
             my @tags=split(/\s+/,$line);
-            #tags are in folowing order seqname,source,feature,start,end,score,strand,frame,attribute
+            #tags are in folowing order feature(chr,scaff,contig),source,type(CDS,exon),start,end,score,strand,frame,attribute
             if($tags[1]=~m/protein_coding/)
             {
+
                 if($tags[2]=~m/CDS/)
                 {
-                    my $gtf=new GTF($tags[0],$tags[2],$tags[3],$tags[4],$tags[6]);
+                    my $gtf=new GTF($tags[0],$tags[1],$tags[2],$tags[3],$tags[4],$tags[5],$tags[6],$tags[7],$tags[8]);
                     push(@records,$gtf);
                 }
             }

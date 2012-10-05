@@ -1,0 +1,13 @@
+@files=glob("*.txt");
+open(WR,">","/nfs/ma/home/shyama/outputs/all.csv");
+foreach my $f(@files)
+{
+  open(RD,"<",$f) or die("Could not open $f");
+  my @lines=<RD>;
+  $lines[0]=~s/^\s+//g;
+  $lines[0]=~s/\s+/,/g;
+  print WR $lines[0]."\n";
+  close(RD);
+}
+
+close(WR);

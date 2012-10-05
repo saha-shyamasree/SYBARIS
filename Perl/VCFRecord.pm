@@ -6,7 +6,7 @@ sub new
 {
     my $class = shift;
     my $self = {
-        _chr=>shift,
+        _feat=>shift,
         _pos=>shift,
         _id=>shift,
         _ref=>shift,
@@ -20,10 +20,10 @@ sub new
     return $self;
 }
 
-sub setChr
+sub setFeat
 {
     my ($self,$chr)=@_;
-    $self->{_chr}=$chr if defined($chr);
+    $self->{_feat}=$chr if defined($chr);
 }
 
 sub setPOS
@@ -35,7 +35,7 @@ sub setPOS
 sub setID
 {
     my ($self,$id)=@_;
-    $self->{_id}=$id if defined($chr);
+    $self->{_id}=$id if defined($id);
 }
 
 sub setRef
@@ -74,9 +74,9 @@ sub setFormat
     $self->{_format}=$format if defined($format);
 }
 
-sub getChr {
+sub getFeat {
     my( $self ) = @_;
-    return $self->{_chr};
+    return $self->{_feat};
 }
 
 sub getPOS {
@@ -120,9 +120,9 @@ sub getFormat {
 }
 
 
-sub printChr {
+sub printFeat {
     my( $self ) = @_;
-    print $self->{_chr};
+    print $self->{_feat};
 }
 
 sub printPOS {
@@ -168,8 +168,8 @@ sub printFormat {
 sub printVCF
 {
     my ($self)=@_;
-    print "\nChromosome:";
-    $self->printChr();
+    print "\nFeature:";
+    $self->printFeat();
     print "\tPOS:";
     $self->printPOS();
     print "\tID:";

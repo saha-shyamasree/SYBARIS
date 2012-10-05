@@ -7,7 +7,7 @@ sub new
     my $class = shift;
     my $self = {
                 _protein=>shift,
-                _chr=>shift,
+                _feat=>shift,
                 _start=>shift,
                 _end=>shift,
                 _strand=>shift,
@@ -25,10 +25,10 @@ sub setProtein
     $self->{_protein} = $p if defined($p);
 }
 
-sub setChr
+sub setFeat
 {
     my ($self,$c) = @_;
-    $self->{_chr} = $c if defined($c);
+    $self->{_feat} = $c if defined($c);
 }
 
 sub setStart
@@ -76,10 +76,10 @@ sub getProtein
     return $self->{_protein};
 }
 
-sub getChr
+sub getFeat
 {
     my ($self) = @_;
-    return $self->{_chr};
+    return $self->{_feat};
 }
 
 sub getStart
@@ -125,10 +125,10 @@ sub printProtein
     print $self->{_protein};
 }
 
-sub printChr
+sub printFeat
 {
     my ($self) = @_;
-    print $self->{_chr};
+    print $self->{_feat};
 }
 
 sub printStart
@@ -174,8 +174,8 @@ sub printProteinCodingSeq
     my ($self) = @_;
     print "\nProtein Id:";
     $self->printProtein();
-    print "\tChromosome:";
-    $self->printChr();
+    print "\tFeature:";
+    $self->printFeat();
     print "\tStart:";
     $self->printStart();
     print "\tEnd:";

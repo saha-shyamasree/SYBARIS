@@ -15,12 +15,14 @@ use ProteinSeq;
 use ProteinSeqParser;
 use ProteinCodingSeq;
 use ProteinCodingSeqParser;
-use GFF;
-use GFFParser;
+#use GFF;
+#use GFFParser;
+use GTF;
+use GTFParser;
 
-my @files=("vcf/B07BNABXX_2_4.vcf","vcf/C023MABXX_3_8.vcf","vcf/D0ACKACXX_1_12.vcf","vcf/B07BNABXX_1_9.vcf","vcf/C023MABXX_5_2.vcf");#glob("vcf/"."*.vcf");
+my @files=("vcf/B07BNABXX_2_4.vcf","vcf/C023MABXX_3_8.vcf");#glob("vcf/"."*.vcf"); ,,"vcf/B07BNABXX_1_9.vcf","vcf/C023MABXX_5_2.vcf" "vcf/D0ACKACXX_1_12.vcf"
 
-my %different_ref=(B07BNABXX_2_4=>"",C023MABXX_3_8=>"",D0ACKACXX_1_12=>"");
+my %different_ref=(); #B07BNABXX_2_4.vcf=>""D0ACKACXX_1_12=>""
 
 if(!(-d  "protein"))
 {
@@ -34,18 +36,23 @@ $parser->read();
 
 #my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatus.protein.coding.fa");
 #my $PCSP=new ProteinCodingSeqParser("/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatus.protein.coding.fa");
-my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_fumigatus1163.CADRE.15.protein.coding.fa");
+my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_nidulans.ASM14920v1.15.protein.coding.fa");
 $PCSP->parse();
 
 #my $PSP=new ProteinSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_fumigatus.CADRE.14.pep.all.fa");
-my $PSP=new ProteinSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_fumigatusa1163.CADRE.15.pep.all.fa");
+my $PSP=new ProteinSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_nidulans.ASM14920v1.15.pep.all.fa");
 $PSP->parse();
 
 
-my $GFFP=new GFFParser("/Volumes/ma-home/shyama/DATA/SYBARIS/gff/A_fumigatus_Af293_version_s03-m02-r08_features_with_chromosome_sequences.gff");
+#my $GFFP=new GFFParser("/Volumes/ma-home/shyama/DATA/SYBARIS/gff/A_fumigatus_Af293_version_s03-m02-r08_features_with_chromosome_sequences.gff");
+#$GFFP->parse();
+#my $gArray=$GFFP->getGFF();
+#print "\n\n GFFP : no of: GFF:".@$gArray;
+
+my $GFFP=new GTFParser("/Volumes/ma-home/shyama/DATA/SYBARIS/gtf/Aspergillus_nidulans.ASM14920v1.15.gtf");
 $GFFP->parse();
-my $gArray=$GFFP->getGFF();
-print "\n\n GFFP : no of: GFF:".@$gArray;
+my $gArray=$GFFP->getGTF();
+#print "\n\n GFFP : no of: GFF:".@$gArray;
 
 #$PCSP->printProteinCodingSeqArray();
 my $pr=$PCSP->getProteinCodingSeq();
@@ -69,10 +76,15 @@ for(my $i=0;$i<@files;$i++)
     print "\n File:".$temp_file_name;
     if(!(exists $different_ref{$temp_file_name}))
     {
-        open(WRT,">","protein/".$temp_file_name.".fa");
+        print "\n\n Came here";
+        $temp_file_name="protein/".$temp_file_name.".fa";
+        open(WRT,">",$temp_file_name) or die("Could not create ".$temp_file_name);
+        
+        sleep(10);
+        
         if($temp_file_name=~m/B07BNABXX_1_9/ || $temp_file_name=~m/C023MABXX_5_2/)
         {
-            $files[$i]=~s/\.vcf/_AF293.vcf/g;
+            #$files[$i]=~s/\.vcf/_AF293.vcf/g;
         }
         my $parser=new VCFParser($files[$i]);
         
@@ -82,7 +94,7 @@ for(my $i=0;$i<@files;$i++)
         my $p_ind=0;
         foreach my $p(@prs)
         {
-            my $variations=$parser->getVCFRecordsByPosition($p->getStart,$p->getEnd(),$p->getChr());
+            my $variations=$parser->getVCFRecordsByPosition($p->getStart,$p->getEnd(),$p->getFeat());
             if(@$variations>0)
             {
                 #printVariations($variations);
@@ -93,12 +105,12 @@ for(my $i=0;$i<@files;$i++)
                 {
                     $seq_obj = $seq_obj->revcom();
                 }
-                my $seq_prot = $seq_obj->translate(-codontable_id => 4);
+                my $seq_prot = $seq_obj->translate(-codontable_id => 4); # codon table for is for fungi
                 print WRT mutationProtein($p,$seq_prot->seq());
             }
             else
             {
-                print "\nNo Mutation for ".$p->getProtein();
+                #print "\nNo Mutation for ".$p->getProtein();
                 print WRT noMutationProtein($ps[$p_ind]);
             }
             $p_ind=$p_ind+1;
@@ -111,7 +123,7 @@ for(my $i=0;$i<@files;$i++)
 sub noMutationProtein
 {
     my $prt=shift;
-    my $str=$prt->getProtein()." chromosome:CADRE:".$prt->getChr().":".$prt->getStart().":".$prt->getEnd().":".$prt->getStrand()." gene:".$prt->getGene()." transcript:".$prt->getTranscript()."\n".$prt->getSeq()."\n";
+    my $str=$prt->getProtein()." feature:CADRE:".$prt->getFeat().":".$prt->getStart().":".$prt->getEnd().":".$prt->getStrand()." gene:".$prt->getGene()." transcript:".$prt->getTranscript()."\n".$prt->getSeq()."\n";
     return $str;
 }
 
@@ -119,7 +131,7 @@ sub mutationProtein
 {
     my $prt=shift;
     my $protein=shift;
-    my $str=$prt->getProtein()." chromosome:CADRE:".$prt->getChr().":".$prt->getStart().":".$prt->getEnd().":".$prt->getStrand()." gene:".$prt->getGene()." transcript:".$prt->getTranscript()."\n".$protein."\n";
+    my $str=$prt->getProtein()." feature:CADRE:".$prt->getFeat().":".$prt->getStart().":".$prt->getEnd().":".$prt->getStrand()." gene:".$prt->getGene()." transcript:".$prt->getTranscript()."\n".$protein."\n";
     return $str;
 }
 sub printVariations
@@ -181,9 +193,10 @@ sub relaceMutation
     printVariations($variations);
     
     print "\nMutated:".$replaced_seq;
-    my $CDSs=$gffp->getGFFByPosition($p->getStart(),$p->getEnd(),$p->getChr());
-    
-    print "\nNo of CDS:".@$CDSs;
+    #my $CDSs=$gffp->getGFFByPosition($p->getStart(),$p->getEnd(),$p->getChr());
+    my $CDSs=$gffp->getGTFByPosition($p->getStart(),$p->getEnd(),$p->getFeat());
+    my @tempCDS=@$CDSs;
+    print "\nNo of CDS:".@tempCDS;
     my $exon=getExon($replaced_seq,$CDSs,$p->getStart());
     print "\nEXON:\n$exon";
     return $exon;
@@ -196,7 +209,8 @@ sub getExon
     my $start=shift;
     
     my $exon="";
-    print "\nin GetExon";
+    print "\nin GetExon:size of CDS ".@$CDSs;
+    
     for(my $i=0;$i<@$CDSs;$i++)
     {
         my $str=substr($seq,(($CDSs->[$i]->getStart())-$start),(($CDSs->[$i]->getEnd())-($CDSs->[$i]->getStart())+1));

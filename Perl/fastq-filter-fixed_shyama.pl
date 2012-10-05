@@ -3,11 +3,11 @@
 open FQ1, "gunzip -c $ARGV[0] |" or die $!;
 open FQ2, "gunzip -c $ARGV[1] |" or die $!;
 
-open BR1, "| gzip -c > bad/$ARGV[0].fastq.gz" or die $!;
-open BR2, "| gzip -c > bad/$ARGV[1].fastq.gz" or die $!;
+open BR1, "| gzip -c > bad/$ARGV[0]" or die $!;
+open BR2, "| gzip -c > bad/$ARGV[1]" or die $!;
 
-open GR1, "| gzip -c > good/$ARGV[0].fastq.gz" or die $1;
-open GR2, "| gzip -c > good/$ARGV[1].fastq.gz" or die $1;
+open GR1, "| gzip -c > good/$ARGV[0]" or die $1;
+open GR2, "| gzip -c > good/$ARGV[1]" or die $1;
 
 
 my $f1 = <FQ1>;

@@ -5,9 +5,9 @@ use warnings;
 sub new {
     my $class = shift;
     my $self = {
-        _seqName=>shift,
-        _source=>shift,
         _feat=>shift,
+        _source=>shift,
+        _type=>shift,
         _start=>shift,
         _end=>shift,
         _score=>shift,
@@ -64,10 +64,10 @@ sub setAttribute
     $self->{_attribute} = $c if defined($c);
 }
 
-sub getSeqName
+sub getType
 {
     my ($self) = @_;
-    return $self->{_seqName};
+    return $self->{_type};
 }
 
 sub getSource

@@ -44,7 +44,7 @@ sub getVCFRecordsByPosition
         if(ref($records[$i]))
         {
             
-            if(($records[$i])->getChr()=~m/\Q$chr\E/)
+            if(($records[$i])->getFeat()=~m/\Q$chr\E/)
             {
                 
                 my $pos=$records[$i]->getPOS();
@@ -82,7 +82,7 @@ sub read
         if($line!~m/^\#/)
         {
             my @fields=split(/\t/,$line);
-            $fields[0]=~s/Chr(\d).*/$1/g;
+            #$fields[0]=~s/Chr(\d).*/$1/g;
             #print "\nChromosome:".$fields[0];
             my $rec=new VCFRecord(@fields);
             push @records, $rec;
