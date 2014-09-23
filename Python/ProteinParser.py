@@ -110,9 +110,9 @@ class ProteinParser:
             #print prt[0].getProtein()
             return prt[0]
         else:
-	    print "PID of no match:"+pid
-	    print "match length:"+str(len(prt))
-	    print "File Name:"+self._filename
+            print "PID of no match:"+pid
+            print "match length:"+str(len(prt))
+            print "File Name:"+self._filename
             return None
     def getSeqSize(self):
         return self._seqSize

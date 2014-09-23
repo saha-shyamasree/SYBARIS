@@ -12,14 +12,22 @@ class FilteredRes:
         self.node = m.group(1)
         self.contig_length = m.group(2)
         self.contig_coverage = m.group(3)
-        sp_st_gn=re.search('\|.+?\|(\S+) (.+)? OS=(.+) \(strain (.+)\) GN=(\S+) (.+)?',hit_def)
-        self.proteinId = sp_st_gn.group(1)
-        self.proteinName = sp_st_gn.group(2)
-        self.species = sp_st_gn.group(3)
-        self.strain = sp_st_gn.group(4)
-        self.gene = sp_st_gn.group(5)
+        if hit_def!="":
+            sp_st_gn=re.search('\|.+?\|(\S+) (.+)? OS=(.+) \(strain (.+)\) GN=(\S+) (.+)?',hit_def)
+            self.proteinId = sp_st_gn.group(1)
+            self.proteinName = sp_st_gn.group(2)
+            self.species = sp_st_gn.group(3)
+            self.strain = sp_st_gn.group(4)
+            self.gene = sp_st_gn.group(5)
+            
+        else:
+            self.proteinId = ""
+            self.proteinName = ""
+            self.species = ""
+            self.strain = ""
+            self.gene = ""
         self.indentities = indentities
-        self.hit_length = hit_length
+        self.hit_length = hit_length   
         self.alignment_length = alignment_length
         self.good_map = good_map
         self.long_map = long_map

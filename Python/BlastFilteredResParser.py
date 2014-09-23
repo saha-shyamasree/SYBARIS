@@ -4,7 +4,7 @@ import csv
 import re
 
 class FilteredRes:
-    """A class to reprent each blast results"""
+    """A class to represent each blast results"""
     def __init__(self, filename,sample,node,length,coverage,species,strain,gene,proteinid,proteinname,gMap,lMap,seqQ,seqP):
         self.filename = filename
         self.sample = sample

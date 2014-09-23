@@ -54,6 +54,7 @@ class BlastResFilter:
     def __init__(self, filename):
         self.filename = filename
         self.objects = []
+        self.failedObjects = []
     def getFilename(self):
         return self.filename;
     def read(self):
@@ -63,6 +64,7 @@ class BlastResFilter:
        noCol=0
        goodCol=0
        longCol=0
+       lengthRationCol=0
        idenCol=0
        nodeCol=0
        hitDefCol=0
@@ -89,6 +91,8 @@ class BlastResFilter:
                     idenCol=j
                 elif item.strip() == "long_match":
                     longCol=j
+                elif item.strip() == "length_ratio":
+                    lengthRationCol =j;
                 elif item.strip() == "query_name":
                     nodeCol=j
                 elif item.strip() == "hit_def":
@@ -106,12 +110,23 @@ class BlastResFilter:
                     print "Wrong data Order"
                     break
                 if j==noCol and item.strip() == "no":
+                    m=re.search("(.+)?\.out",row[fileCol])
+                    resObj=FilteredRes(m.group(1),row[nodeCol],names_mapping[m.group(1)],"","","","","","","","")
+                    self.failedObjects.append(resObj)
                     break
                 elif j==goodCol:
-                    if item.strip() < goodCutOff:
+                    if float(item.strip()) < goodCutOff:
+                        print "could not pass good match threshold"
+                        m=re.search("(.+)?\.out",row[fileCol])
+                        resObj=FilteredRes(m.group(1),row[nodeCol],names_mapping[m.group(1)],"","","","","","","","")
+                        self.failedObjects.append(resObj)
                         break
                 elif j==longCol:
-                    if item.strip() <= longCutOff:
+                    if float(item.strip()) <= longCutOff:
+                        print "could not pass long match threshold"
+                        m=re.search("(.+)?\.out",row[fileCol])
+                        resObj=FilteredRes(m.group(1),row[nodeCol],names_mapping[m.group(1)],"","","","","","","","")
+                        self.failedObjects.append(resObj)
                         break
                 elif j==seqPCol:
                     if float(row[goodCol]) >= goodCutOff and float(row[longCol]) > longCutOff:
@@ -119,6 +134,7 @@ class BlastResFilter:
                         #print names_mapping[m.group(1)]
                         resObj=FilteredRes(m.group(1),row[nodeCol],names_mapping[m.group(1)],row[hitDefCol],row[idenCol],row[hitCol],row[alignCol],row[goodCol],row[longCol],row[seqQCol],row[seqPCol])
                         self.objects.append(resObj)
+                        
             j+=1
         i+=1
        
@@ -126,8 +142,13 @@ class BlastResFilter:
         csvWriter = csv.writer(open(outFile, 'wb'), delimiter=',')
         csvWriter.writerow(['File','Sample','Node','Length','Coverage','Species','Strain','Gene','ProteinID','ProteinName','GoodMap','LongMap','SeqQ','SeqP'])
         for row in self.objects:
-            #csvWriter.writerow(row)
             csvWriter.writerow([row.getFilename(),row.getSample(),row.getNode(),row.getLength(),row.getCoverage(),row.getSpecies(),row.getStrain(),row.getGene(),row.getProteinId(),row.getProteinName(),row.getGoodMap(),row.getLongMap(),row.getSeqQ(),row.getSeqP()])
+    def writeFailed(self,outFile):
+        csvWriter = csv.writer(open(outFile, 'wb'), delimiter=',')
+        csvWriter.writerow(['File','Sample','Node','Length','Coverage'])
+        for row in self.failedObjects:
+            csvWriter.writerow([row.getFilename(),row.getSample(),row.getNode(),row.getLength(),row.getCoverage()])
+        
     def getObj(self):
         return self.objects;
 #path = sys.argv[1]
@@ -139,12 +160,13 @@ class Manipulator:
         self.sample_indices={}
         self.protein_sample={}
     def blastWriter(self):
-        files=["blastCSV/B07BNABXX_2_4.out.csv","blastCSV/C023MABXX_3_8.out.csv","blastCSV/D0ACKACXX_1_12.out.csv","blastCSV/B07BNABXX_1_9.out.csv","blastCSV/C023MABXX_5_2.out.csv"]
-        for infile in files: #glob.glob('blastCSV/*.csv'):
+        #files=["blastCSV/B07BNABXX_2_4.out.csv","blastCSV/C023MABXX_3_8.out.csv","blastCSV/D0ACKACXX_1_12.out.csv","blastCSV/B07BNABXX_1_9.out.csv","blastCSV/C023MABXX_5_2.out.csv"]
+        for infile in glob.glob('blastCSV/*.csv'): 
             filter=BlastResFilter(infile)
             filter.read();
             self.resObj=self.resObj+filter.getObj();
             filter.write(os.path.join("blastFiltered",os.path.basename(infile)))
+            filter.writeFailed(os.path.join("blastFailed",os.path.splitext(os.path.basename(infile))[0]))
     def proteinCollection(self):
         for obj in self.resObj:
             if any(obj.getProteinId() in p for p in self.proteins):
@@ -210,6 +232,16 @@ for row in mapReader:
     names_mapping[row[0]]=row[1]
 print names_mapping
 
+if os.path.exists("blastFiltered"):
+    print "Folder already exists"
+else:
+    os.mkdir("blastFiltered")
+
+if os.path.exists("blastFailed"):
+    print "Folder already exists"
+else:
+    os.mkdir("blastFailed")
+    
 manObj=Manipulator()
 manObj.blastWriter()
 #manObj.proteinCollection()

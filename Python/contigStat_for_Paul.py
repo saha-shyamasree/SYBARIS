@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
 from __future__ import division
-from os.path import expanduser
 import sys
-#sys.path.append('/nfs/ma/home/shyama/installed_soft/BiopythonCluster/lib64/python')
+sys.path.append('/nfs/ma/home/shyama/installed_soft/BiopythonCluster/lib64/python')
 import Bio
 import os
 import glob
@@ -17,18 +16,9 @@ from Bio.Blast import NCBIXML
 #path = '/Volumes/ma-home/shyama/outputs/SYBARIS/BLAST/OG/xml_output_gap_coverage/'
 #print sys.argv[1:];
 #path = '/nfs/ma/home/shyama/DATA/SYBARIS/data/blast/' #sys.argv[1] #
-#files = glob.glob('contigsAllReferenceGuidedBlast/*.csv')
-#files = glob.glob('whole*/Trinity_blast_transcript.xml')
-#files = glob.glob('E:\Data\HUMAN\database\Trinity\*.xml');
-#files = glob.glob(r"D:\New folder\blast\uni*.xml");
+files = glob.glob('blast/B07BNABXX_1_9.out')
 #infile=path
-print(sys.argv[1])
-files=glob.glob(sys.argv[1]);
-print(files)
-home = expanduser("~");
-
-path=home+r"\Dropbox\results\blastdb\blastCSV"
-
+path='blastCSVPaul'
 if not os.path.exists(path):
     os.makedirs(path)
 
@@ -38,13 +28,12 @@ for infile in files: #glob.glob('blast/*.out'):
     if os.path.getsize(infile)>0:
         file_handle = open(infile)
         
-        out_handle = open(os.path.join(path,os.path.basename(infile)+'2.csv'),'w')
-        #out_handle.write("file,query_name,query_length,match,hit_def,hit_length,e-value,p-value,identitie,align_length,gap,good_match,long_match,score,more,s_st,s_end\n") #seq,sseq,
-        out_handle.write("query_name,query_length,match,hit_def,hit_length,e-value,p-value,identitie,align_length,gap,good_match,long_match,score,more,s_st,s_end\n") #seq,sseq,
+        out_handle = open(os.path.join(path,os.path.basename(infile)+'.csv'),'w')
+        out_handle.write("file,query_name,query_length,match,hit_def,hit_length,e-value,p-value,identitie,bit_score,align_length,gap,good_match,long_match,score,more,seq,sseq,s_st,s_end\n")
         blast_record_itr = Bio.Blast.NCBIXML.parse(file_handle)
         for blast_record in blast_record_itr:
-            #out_handle.write(os.path.basename(infile) + ",")
-            out_handle.write(blast_record.query.replace(",",";") + ",")
+            out_handle.write(os.path.basename(infile) + ",")
+            out_handle.write(blast_record.query + ",")
             out_handle.write(str(blast_record.query_letters)+",")
             if(len(blast_record.alignments)>0):
                 out_handle.write("yes,")
@@ -61,6 +50,8 @@ for infile in files: #glob.glob('blast/*.out'):
                         out_handle.write(",")
                         out_handle.write(str(hsp.identities))
                         out_handle.write(",")
+                        out_handle.write(str(hsp.bits))
+                        out_handle.write(",")
                         out_handle.write(str(hsp.align_length))
                         out_handle.write(",")
                         out_handle.write(str(hsp.gaps))
@@ -73,10 +64,10 @@ for infile in files: #glob.glob('blast/*.out'):
                         out_handle.write(",")
                         out_handle.write(str(count))
                         out_handle.write(",")
-                        #out_handle.write(hsp.query)
-                        #out_handle.write(",")
-                        #out_handle.write(hsp.sbjct)
-                        #out_handle.write(",")
+                        out_handle.write(hsp.query)
+                        out_handle.write(",")
+                        out_handle.write(hsp.sbjct)
+                        out_handle.write(",")
                         out_handle.write(str(hsp.sbjct_start))
                         out_handle.write(",")
                         out_handle.write(str(hsp.sbjct_end)+"\n")
@@ -85,6 +76,4 @@ for infile in files: #glob.glob('blast/*.out'):
             else:
                 out_handle.write("no, , , , , , , , , , , , , , \n")
     else:
-        print(infile+" is empty")
-
-
+        print infile+" is empty"
