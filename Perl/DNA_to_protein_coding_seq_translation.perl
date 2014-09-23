@@ -3,10 +3,10 @@
 This piece of code read the protein reference file and whole genome sequence (DNA seq). And extract Nucleotide for each protein from the reference genome. It is enough to run this code for each reference once. In variation_in_seq.perl we protein coding DNA seq for each protein and then replace variations to get strain specific protein compliments.
 =cut
 
-my $protein_ref_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_nidulans.ASM14920v1.15.pep.all.fa";
+my $protein_ref_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_fumigatus.CADRE.15.pep.all.fa";
 #my $DNA_ref_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_Af293_version_s03-m02-r08_chromosomes.fasta";
-my $DNA_ref_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_nidulans.ASM14920v1.15.dna.toplevel.fa";
-my $protein_coding_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_nidulans.ASM14920v1.15.protein.coding.fa";
+my $DNA_ref_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatus.CADRE.15.dna.toplevel.fa";
+my $protein_coding_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_fumigatus.CADRE.15.protein.coding.fa";
 
 =prod
 my $protein_ref_path="/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_fumigatusa1163.CADRE.14.pep.all.fa";

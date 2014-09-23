@@ -20,7 +20,7 @@ use ProteinCodingSeqParser;
 use GTF;
 use GTFParser;
 
-my @files=("vcf/B07BNABXX_2_4.vcf","vcf/C023MABXX_3_8.vcf");#glob("vcf/"."*.vcf"); ,,"vcf/B07BNABXX_1_9.vcf","vcf/C023MABXX_5_2.vcf" "vcf/D0ACKACXX_1_12.vcf"
+my @files=("vcf/D0ACKACXX_2_7.vcf");#("vcf/B07BNABXX_1_9.vcf","vcf/C023MABXX_5_2.vcf");#glob("vcf/"."*.vcf");"vcf/D0ACKACXX_2_4.vcf","vcf/D0ACKACXX_2_6.vcf","vcf/D0ACKACXX_2_7.vcf","vcf/D0ACKACXX_2_8.vcf"#("vcf/B07BNABXX_2_4.vcf","vcf/C023MABXX_3_8.vcf");#  "vcf/D0ACKACXX_1_12.vcf" "vcf/B07BNABXX_1_9.vcf","vcf/C023MABXX_5_2.vcf"
 
 my %different_ref=(); #B07BNABXX_2_4.vcf=>""D0ACKACXX_1_12=>""
 
@@ -34,13 +34,13 @@ my $parser=new VCFParser("/Volumes/ma-home/shyama/DATA/SYBARIS/data/vcf/C023MABX
 $parser->read();
 =cut
 
-#my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatus.protein.coding.fa");
+my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_fumigatus.CADRE.15.protein.coding.fa");
 #my $PCSP=new ProteinCodingSeqParser("/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/Aspergillus_fumigatus.protein.coding.fa");
-my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_nidulans.ASM14920v1.15.protein.coding.fa");
+#my $PCSP=new ProteinCodingSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/proteinCoding/Aspergillus_nidulans.ASM14920v1.15.protein.coding.fa");
 $PCSP->parse();
 
 #my $PSP=new ProteinSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_fumigatus.CADRE.14.pep.all.fa");
-my $PSP=new ProteinSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_nidulans.ASM14920v1.15.pep.all.fa");
+my $PSP=new ProteinSeqParser("/Volumes/ma-home/shyama/DATA/SYBARIS/ReferenceGenome/protein/Aspergillus_fumigatus.CADRE.15.pep.all.fa");
 $PSP->parse();
 
 
@@ -49,7 +49,7 @@ $PSP->parse();
 #my $gArray=$GFFP->getGFF();
 #print "\n\n GFFP : no of: GFF:".@$gArray;
 
-my $GFFP=new GTFParser("/Volumes/ma-home/shyama/DATA/SYBARIS/gtf/Aspergillus_nidulans.ASM14920v1.15.gtf");
+my $GFFP=new GTFParser("/Volumes/ma-home/shyama/DATA/SYBARIS/gtf/Aspergillus_fumigatus.CADRE.15.gtf");
 $GFFP->parse();
 my $gArray=$GFFP->getGTF();
 #print "\n\n GFFP : no of: GFF:".@$gArray;
@@ -161,29 +161,30 @@ sub relaceMutation
     {
         my $ref=$variations->[$i]->getRef();
         my $alt=$variations->[$i]->getAlt();
-        if($alt=~m/,/g)
+        my $back_nucl=0;
+        my $length=0;
+        print "\nPOS:".$variations->[$i]->getPOS();
+        if($i>0)
         {
-            #dont process it for time being
+            #substr will be from [$i-1]->pos with length [$i]->pos-[$i-1]->pos-1
+            $back_nucl=($variations->[$i-1]->getPOS())-$start+length($variations->[$i-1]->getRef());
+            $length=($variations->[$i]->getPOS())-($variations->[$i-1]->getPOS())-1;
         }
         else
         {
-            my $back_nucl=0;
-            my $length=0;
-            print "\nPOS:".$variations->[$i]->getPOS();
-            if($i>0)
-            {
-                #substr will be from [$i-1]->pos with length [$i]->pos-[$i-1]->pos-1
-                $back_nucl=($variations->[$i-1]->getPOS())-$start+length($variations->[$i-1]->getRef());
-                $length=($variations->[$i]->getPOS())-($variations->[$i-1]->getPOS())-1;
-            }
-            else
-            {
-                $length=($variations->[$i]->getPOS())-$start;
-            }
-            my $substr = substr($seq,$back_nucl,$length);
-            print "\nSubSTR from $back_nucl with length $length :\n".$substr;
-            $replaced_seq=$replaced_seq.$substr.$alt;
+            $length=($variations->[$i]->getPOS())-$start;
         }
+        my $substr = substr($seq,$back_nucl,$length);
+        print "\nSubSTR from $back_nucl with length $length :\n".$substr;
+        if($alt=~m/,/g)
+        {
+        #dont process it for time being, simply copy the ref
+            $replaced_seq=$replaced_seq.$substr.$ref;
+        }
+        else
+        {
+            $replaced_seq=$replaced_seq.$substr.$alt;
+        }        
     }
     my $substr = substr($seq,($variations->[$i-1]->getPOS()-$start+length($variations->[$i-1]->getRef())));
     print "\nSubSTR from ".$variations->[$i]->getPOS().":\n".$substr;
@@ -197,6 +198,10 @@ sub relaceMutation
     my $CDSs=$gffp->getGTFByPosition($p->getStart(),$p->getEnd(),$p->getFeat());
     my @tempCDS=@$CDSs;
     print "\nNo of CDS:".@tempCDS;
+    if(@tempCDS<1)
+    {
+        die("There should be atleast one CDS. Somthing is wrong for ".$p->getProtein())
+    }
     my $exon=getExon($replaced_seq,$CDSs,$p->getStart());
     print "\nEXON:\n$exon";
     return $exon;

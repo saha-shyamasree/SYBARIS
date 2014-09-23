@@ -1,8 +1,30 @@
 #!/usr/bin/perl
-
-open FQ1, "gunzip -c $ARGV[0] |" or die $!;
+if($ARGV[0]=~m/\.gz$/)
+{
+	open FQ1, "gunzip -c $ARGV[0] |" or die $!;
+}
+else
+{
+	open FQ1, "cat $ARGV[0] |" or die $!;
+}
+if($ARGV[1]=~m/\.gz$/)
+{
 open FQ2, "gunzip -c $ARGV[1] |" or die $!;
+}
+else
+{
+	open FQ2, "cat $ARGV[1] |" or die $!;
+}
+if(!(-d "bad"))
+{
+	mkdir("bad");
+}
 
+if(!(-d "good"))
+{
+      mkdir("good");
+}
+    
 open BR1, "| gzip -c > bad/$ARGV[0]" or die $!;
 open BR2, "| gzip -c > bad/$ARGV[1]" or die $!;
 
@@ -68,7 +90,8 @@ sub get_next_read {
 	while (!eof($fh)) {
 		my $L = <$fh>;
 		$c++;
-		$nid = $L and last if $L =~ m/^\@HWI.*\/[12]$/;
+		#pattern @HWI is changed to @HW as C. albicans and S. cerevisae had @HWU
+		$nid = $L and last if $L =~ m/(?:^\@HW.*\/[12]$)|(?:^\@HISEQ.*\/[12]$)/;
 		$plus_seen = 1 and next if $L =~ /^\+$/;
 		$read->{seq}  .= $L if not $plus_seen;
 		$read->{qual} .= $L if $plus_seen;

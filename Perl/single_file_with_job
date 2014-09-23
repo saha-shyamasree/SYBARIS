@@ -5,19 +5,22 @@ my $sam_path="/nfs/ma/home/shyama/installed_soft/samtools-0.1.18";
 my $velvet_path="/nfs/ma/home/shyama/installed_soft/velvet_1.2.06";
 my $path_bowtie2="/nfs/ma/home/shyama/installed_soft/bowtie2-2.0.0-beta6/bowtie2";
 
-my %ref_files=('all'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/",
-                'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_nidulans_FGSC_A4_version_s09-m01-r04_chromosomes.fasta",
-                'C023MABXX_3_8'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_nidulans_FGSC_A4_version_s09-m01-r04_chromosomes.fasta",
-                'D0ACKACXX_1_12'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/N_fischeri_NRRL_181_chromosomes.fasta",
-                'B07BNABXX_1_9'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_A1163_chromosomes.fasta",
-                'C023MABXX_5_2'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_A1163_chromosomes.fasta");
+#my %ref_files=('all'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/",
+#                'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_nidulans_FGSC_A4_version_s09-m01-r04_chromosomes.fasta",
+#                'C023MABXX_3_8'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_nidulans_FGSC_A4_version_s09-m01-r04_chromosomes.fasta",
+#                'D0ACKACXX_1_12'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/N_fischeri_NRRL_181_chromosomes.fasta",
+#                'B07BNABXX_1_9'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_A1163_chromosomes.fasta",
+#                'C023MABXX_5_2'=>"/nfs/ma/home/shyama/DATA/SYBARIS/ReferenceGenome/aspgd/A_fumigatus_A1163_chromosomes.fasta");
+#
+#my %index_list=('all'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/AF293/AF293",
+#                     'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F8226/F8226",
+#                     'C023MABXX_3_8'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F8226/F8226",
+#                     'D0ACKACXX_1_12'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F4S9A/F4S9A",
+#                     'B07BNABXX_1_9'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/A1163/A1163",
+#                     'C023MABXX_5_2'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/A1163/A1163");
 
-my %index_list=('all'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/AF293/AF293",
-                     'B07BNABXX_2_4'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F8226/F8226",
-                     'C023MABXX_3_8'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F8226/F8226",
-                     'D0ACKACXX_1_12'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/F4S9A/F4S9A",
-                     'B07BNABXX_1_9'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/A1163/A1163",
-                     'C023MABXX_5_2'=>"/nfs/ma/home/shyama/DATA/SYBARIS/Index/aspgd/A1163/A1163");
+my %ref_files=('all'=>"");
+my %index_list=('all'=>"");
 
 my $in=shift;
 pipeline($in);
