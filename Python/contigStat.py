@@ -27,7 +27,7 @@ files=glob.glob(sys.argv[1]);
 print(files)
 home = expanduser("~");
 
-path=home+r"\Dropbox\results\blastdb\blastCSV"
+path=argv[2]
 
 if not os.path.exists(path):
     os.makedirs(path)
@@ -40,7 +40,7 @@ for infile in files: #glob.glob('blast/*.out'):
         
         out_handle = open(os.path.join(path,os.path.basename(infile)+'2.csv'),'w')
         #out_handle.write("file,query_name,query_length,match,hit_def,hit_length,e-value,p-value,identitie,align_length,gap,good_match,long_match,score,more,s_st,s_end\n") #seq,sseq,
-        out_handle.write("query_name,query_length,match,hit_def,hit_length,e-value,p-value,identitie,align_length,gap,good_match,long_match,score,more,s_st,s_end\n") #seq,sseq,
+        out_handle.write("query_name,query_length,match,hit_count,hit_def,hit_length,e-value,p-value,identitie,align_length,gap,good_match,long_match,score,more,s_st,s_end\n") #seq,sseq,
         blast_record_itr = Bio.Blast.NCBIXML.parse(file_handle)
         for blast_record in blast_record_itr:
             #out_handle.write(os.path.basename(infile) + ",")
@@ -48,6 +48,9 @@ for infile in files: #glob.glob('blast/*.out'):
             out_handle.write(str(blast_record.query_letters)+",")
             if(len(blast_record.alignments)>0):
                 out_handle.write("yes,")
+                hit_count=len(blast_record.alignments)
+                out_handle.write(str(hit_count))
+                out_handle.write(",")
                 for alignment in blast_record.alignments:
                     count=len(alignment.hsps)
                     out_handle.write(alignment.hit_def.replace(",",";"))
